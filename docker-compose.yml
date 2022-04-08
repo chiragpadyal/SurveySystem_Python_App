@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+        db:
+                image: mysql
+                container_name: mysql_PythonMiniProject
+                command: --default-authentication-plugin=mysql_native_password
+                restart: always
+                environment:
+                        MYSQL_ROOT_PASSWORD: root
+                        MYSQL_DATABASE: Survey_DB
+                volumes:
+                        - ./init:/docker-entrypoint-initdb.d
+                ports:
+                        - 3307:3306
+        phpmyadmin:
+                image: phpmyadmin/phpmyadmin
+                container_name: phpmyadmin_LR
+                links: 
+                    - db:db
+                ports:
+                    - 8002:80
+                environment:
+                    MYSQL_USER: user
+                    MYSQL_PASSWORD: test
+                    MYSQL_ROOT_PASSWORD: test
