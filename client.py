@@ -3,7 +3,11 @@ import random
 from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
-
+# adawdawdaw
+# adawdawdaw
+# adawdawdaw
+# adawdawdaw
+# adawdawdaw
 class otp_verifier(Tk):
     def __init__(self):
         super().__init__()

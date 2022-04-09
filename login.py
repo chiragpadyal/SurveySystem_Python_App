@@ -1,7 +1,9 @@
+import re
 from tkinter import*
 from tkinter import ttk,messagebox
 from PIL import Image,ImageTk 
-import sqlite3
+import mysql_conn
+from mysql.connector import Error
 # pip install pymysql
 class Login_Window:
 	def __init__(self,root):
@@ -41,32 +43,52 @@ class Login_Window:
 		btn_login=Button(login_frame,text="Login",command=self.dashboard,font=("times new roman",20,"bold"),fg="white",bg="#B00857").place(x=250,y=360,width=180,height=40)
 
 	def login(self):
-
-
-	
 		#===LEFT Image===
-		self.bg=ImageTk.PhotoImage(file="loginside.png")
-		left=Label(self.root,image=self.bg).place(x=80,y=120,width=350)
+		# self.bg=ImageTk.PhotoImage(file="loginside.png")
+		# left=Label(self.root,image=self.bg).place(x=80,y=120,width=350)
 
-		#===Login Frame===
-		#frame1=Frame(self.root,bg="white")
-		#frame1.place(x=450,y=100,width=700,height=500)
 		self.root.destroy()
 		import registerpage
+
+
+	def validEmail(self, email):
+		regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+		if(re.fullmatch(regex, email)):
+			return False
+		else:
+			return True
 
 	def dashboard(self):
 		if self.txt_email.get()=="" or self.txt_pass_.get()=="":
 			messagebox.showerror("Error","All Fields Are Required",parent=self.root)
+		elif self.validEmail(self.txt_email.get()):
+			messagebox.showerror("Error","Check Email",parent=self.root)
 		else:
-			messagebox.showinfo("You have logged in successfully")
-			self.root.destroy()
-			import newfile
+			self.mysql_add()
 
 
 
+	def mysql_add(self):
+		Email = self.txt_email.get()
+		Password = self.txt_pass_.get()
 
-
-
+		try:
+			mydb = mysql_conn.mydb
+			mycursor = mydb.cursor()
+			sql = "SELECT * FROM `regTable` WHERE `Email`= %s  and `Password` = %s"
+			val_arr = ( Email, Password)
+			mycursor.execute(sql, val_arr)
+			# mydb.commit()
+			myresult = mycursor.fetchall()
+			if len( myresult ):
+				self.root.destroy()
+				import newfile
+			else:
+				messagebox.showerror("Error","Account do not exist",parent=self.root)
+			mycursor.close()
+			mydb.close()
+		except Error as err:
+			print(err)
 
 root=Tk()
 obj=Login_Window(root)
